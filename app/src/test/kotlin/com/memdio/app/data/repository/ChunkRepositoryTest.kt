@@ -7,6 +7,7 @@ import com.memdio.app.data.db.ChunkEntity
 import io.mockk.coEvery
 import io.mockk.coJustRun
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -24,6 +25,10 @@ class ChunkRepositoryTest {
 
     @Before
     fun setUp() {
+        // allChunks is eagerly initialised in ChunkRepository's body, so the
+        // call to dao.getAllSortedByStart() happens during construction.
+        // Stub it here before creating the repo so MockK doesn't throw.
+        every { dao.getAllSortedByStart() } returns flowOf(emptyList())
         repo = ChunkRepository(dao)
     }
 

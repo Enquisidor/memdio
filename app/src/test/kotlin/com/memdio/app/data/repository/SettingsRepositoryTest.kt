@@ -8,9 +8,11 @@ import androidx.test.core.app.ApplicationProvider
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.memdio.app.data.model.ExportDestination
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -44,6 +46,13 @@ class SettingsRepositoryTest {
             produceFile = { File(tmpFolder.newFolder(), "settings.preferences_pb") }
         )
         repo = SettingsRepository(dataStore)
+    }
+
+    @After
+    fun tearDown() {
+        // DataStore keeps background coroutines alive inside testScope.
+        // Cancelling here prevents UncompletedCoroutinesError after each test.
+        testScope.cancel()
     }
 
     // ── bufferDurationMinutes ────────────────────────────────────────────────
