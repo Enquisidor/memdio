@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Don't back up raw audio chunks — they are device-private and ephemeral -->
+    <exclude domain="file" path="buffer/" />
+    <exclude domain="cache" path="exports/" />
+</full-backup-content>
