@@ -71,7 +71,7 @@ class RealAacMuxerDelegate @Inject constructor() : AacMuxerDelegate {
                             this.size = size
                             this.offset = 0
                             this.presentationTimeUs = extractor.sampleTime + presentationOffsetUs
-                            this.flags = extractor.sampleFlags
+                            this.flags = extractor.sampleFlags.toCodecBufferFlags()
                         }
                         lastPresentationUs = extractor.sampleTime
                         muxer.writeSampleData(muxTrackIndex, buffer, bufferInfo)
@@ -93,5 +93,23 @@ class RealAacMuxerDelegate @Inject constructor() : AacMuxerDelegate {
 
     companion object {
         private const val BUFFER_SIZE = 1024 * 1024 // 1 MB read buffer
+
+        /**
+         * Maps [MediaExtractor] sample flags to [MediaCodec] buffer flags.
+         *
+         * The two flag namespaces have distinct numeric values so a direct assignment
+         * would fail [android.media.MediaCodec.BufferInfo.flags]'s @IntDef lint check.
+         *  - SAMPLE_FLAG_SYNC (1)          → BUFFER_FLAG_KEY_FRAME (1)
+         *  - SAMPLE_FLAG_PARTIAL_FRAME (4) → BUFFER_FLAG_PARTIAL_FRAME (8)
+         * SAMPLE_FLAG_ENCRYPTED has no public BufferInfo counterpart and is skipped.
+         */
+        private fun Int.toCodecBufferFlags(): Int {
+            var flags = 0
+            if (this and MediaExtractor.SAMPLE_FLAG_SYNC != 0)
+                flags = flags or MediaCodec.BUFFER_FLAG_KEY_FRAME
+            if (this and MediaExtractor.SAMPLE_FLAG_PARTIAL_FRAME != 0)
+                flags = flags or MediaCodec.BUFFER_FLAG_PARTIAL_FRAME
+            return flags
+        }
     }
 }
