@@ -21,13 +21,14 @@ import java.io.File
 class ChunkRotationManagerTest {
 
     private val repo: ChunkRepository = mockk()
+    private val eventBus: BufferEventBus = mockk(relaxed = true)
     private val fileDeleter: (String) -> Unit = mockk(relaxed = true)
 
     private lateinit var manager: ChunkRotationManager
 
     @Before
     fun setUp() {
-        manager = ChunkRotationManager(repo).also { it.fileDeleter = fileDeleter }
+        manager = ChunkRotationManager(repo, eventBus).also { it.fileDeleter = fileDeleter }
     }
 
     // ── enforceLimit ─────────────────────────────────────────────────────────

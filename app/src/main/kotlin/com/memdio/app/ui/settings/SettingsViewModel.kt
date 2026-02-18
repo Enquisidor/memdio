@@ -11,12 +11,15 @@ import com.memdio.app.export.BufferExporter
 import com.memdio.app.export.DispatchResult
 import com.memdio.app.export.ExportDispatcher
 import com.memdio.app.export.ExportResult
+import com.memdio.app.service.BufferEvent
+import com.memdio.app.service.BufferEventBus
 import com.memdio.app.service.BufferService
 import com.memdio.app.service.RecordingState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
@@ -29,7 +32,11 @@ class SettingsViewModel @Inject constructor(
     val settingsRepo: SettingsRepository,
     private val exporter: BufferExporter,
     private val dispatcher: ExportDispatcher,
+    private val eventBus: BufferEventBus,
 ) : ViewModel() {
+
+    /** Pipeline events (chunk recorded / deleted). Collect via [useBufferEvents]. */
+    val bufferEvents: SharedFlow<BufferEvent> = eventBus.events
 
     // ── Recording state (bridged from BufferService companion) ────────────────
 

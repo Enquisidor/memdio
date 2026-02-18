@@ -48,6 +48,7 @@ class BufferService : Service() {
     @Inject lateinit var chunkRepository: ChunkRepository
     @Inject lateinit var settingsRepository: SettingsRepository
     @Inject lateinit var rotationManager: ChunkRotationManager
+    @Inject lateinit var eventBus: BufferEventBus
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -130,14 +131,14 @@ class BufferService : Service() {
     private suspend fun finalizeChunk(file: File, startMs: Long) {
         releaseRecorder()
         val endMs = System.currentTimeMillis()
-        chunkRepository.insert(
-            ChunkEntity(
-                startMs = startMs,
-                endMs = endMs,
-                filePath = file.absolutePath,
-                sizeBytes = file.length(),
-            )
+        val chunk = ChunkEntity(
+            startMs = startMs,
+            endMs = endMs,
+            filePath = file.absolutePath,
+            sizeBytes = file.length(),
         )
+        chunkRepository.insert(chunk)
+        eventBus.emit(BufferEvent.ChunkRecorded(chunk))
         val limitMs = settingsRepository.bufferDurationMinutes.first() * 60_000L
         rotationManager.enforceLimit(limitMs)
         publishActiveState()

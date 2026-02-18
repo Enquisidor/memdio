@@ -14,6 +14,7 @@ import javax.inject.Inject
  */
 class ChunkRotationManager @Inject constructor(
     private val repo: ChunkRepository,
+    private val eventBus: BufferEventBus,
 ) {
 
     // Default implementation deletes the file; can be replaced in tests.
@@ -29,6 +30,7 @@ class ChunkRotationManager @Inject constructor(
             val oldest = repo.getOldestChunk() ?: break
             fileDeleter(oldest.filePath)
             repo.deleteOldest()
+            eventBus.emit(BufferEvent.ChunkDeleted(oldest))
         }
     }
 }
