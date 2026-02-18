@@ -14,11 +14,11 @@ import javax.inject.Inject
  */
 class ChunkRotationManager @Inject constructor(
     private val repo: ChunkRepository,
-    // Default implementation deletes the file; can be replaced in tests.
-    private val fileDeleter: (String) -> Unit = { path ->
-        java.io.File(path).delete()
-    },
 ) {
+
+    // Default implementation deletes the file; can be replaced in tests.
+    var fileDeleter: (String) -> Unit = { path -> java.io.File(path).delete() }
+
 
     /**
      * Deletes the oldest chunk(s) until total buffer duration ≤ [limitMs].
