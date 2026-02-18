@@ -19,9 +19,32 @@
 *.tar.gz
 *.rar
 
+# Gradle wrapper JAR must be committed so CI can bootstrap without installing Gradle
+!gradle/wrapper/gradle-wrapper.jar
+
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
 
 # Kotlin Gradle plugin data, see https://kotlinlang.org/docs/whatsnew20.html#new-directory-for-kotlin-data-in-gradle-projects
 .kotlin/
+
+# Android / Gradle
+.gradle/
+build/
+local.properties
+*.jks
+*.keystore
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.DS_Store
+
+# Generated build output
+app/build/
+
+# Secrets — never commit
+google-services.json
