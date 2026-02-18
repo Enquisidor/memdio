@@ -27,7 +27,7 @@ class ChunkRotationManagerTest {
 
     @Before
     fun setUp() {
-        manager = ChunkRotationManager(repo, fileDeleter)
+        manager = ChunkRotationManager(repo).also { it.fileDeleter = fileDeleter }
     }
 
     // ── enforceLimit ─────────────────────────────────────────────────────────
